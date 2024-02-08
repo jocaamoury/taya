@@ -1,9 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
+// eslint-disable-next-line prettier/prettier
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { dataSourceOptions } from './configs/ormconfig';
-import { UserMiddleware } from './get-user-middleware';
 import { Proposal, User } from './entities/entities.entity';
+import { UserMiddleware } from './get-user-middleware';
+import { AppController } from './implementations/app.controller';
+import { AppService } from './implementations/app.service.service';
 
 @Module({
   imports: [
@@ -11,9 +14,18 @@ import { Proposal, User } from './entities/entities.entity';
     TypeOrmModule.forFeature([User, Proposal]),
   ],
   controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UserMiddleware).forRoutes('*'); // Apply it for all routes or specify routes
+    consumer
+      .apply(UserMiddleware)
+      .exclude({ path: 'proposals/all', method: RequestMethod.GET })
+      .forRoutes(
+        { path: 'proposals/:id', method: RequestMethod.GET },
+        { path: 'proposals', method: RequestMethod.GET },
+        { path: 'proposals/refused', method: RequestMethod.GET },
+        { path: 'proposals/:proposal_id/approve', method: RequestMethod.POST },
+      );
   }
 }

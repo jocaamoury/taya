@@ -1,10 +1,5 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+// eslint-disable-next-line prettier/prettier
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum ProposalStatus {
   SUCCESSFUL = 'SUCCESSFUL',
